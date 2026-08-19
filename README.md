@@ -1,3 +1,18 @@
+> [!NOTE]
+> **DriveWealth fork** — This is not a true fork. It is a shim that replaces the
+> upstream Docker-based action with a composite action that downloads the official
+> [`mszostok/codeowners-validator`](https://github.com/mszostok/codeowners-validator)
+> binary directly from GitHub Releases, enabling ARM64 runner support.
+>
+> - Pinned to **v0.7.2** to avoid the GitHub App token scope regression in v0.7.3+
+>   (see [upstream issue #143](https://github.com/mszostok/codeowners-validator/issues/143))
+> - The upstream Docker image (`ghcr.io/mszostok/codeowners-validator:v0.7.2`) is AMD64-only;
+>   v0.7.2 ships a `Linux_arm64` binary which this action uses instead
+> - Reference as `DriveWealth/codeowners-validator@<sha>` — do **not** use a tag,
+>   tags point to the upstream release, not this shim
+>
+> Tracked in [DO-7299](https://drivewealth.atlassian.net/browse/DO-7299).
+
 <br/>
 <br/>
 <p align="center">

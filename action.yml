@@ -58,10 +58,41 @@ inputs:
     required: false
 
 runs:
-  using: 'docker'
-  image: 'docker://ghcr.io/mszostok/codeowners-validator:v0.7.2'
-  env:
-    ENVS_PREFIX: "INPUT"
+  using: "composite"
+  steps:
+    - name: Install codeowners-validator
+      shell: bash
+      run: |
+        ARCH=$(uname -m)
+        case "$ARCH" in
+          x86_64)  ARCH="x86_64" ;;
+          aarch64) ARCH="arm64" ;;
+        esac
+        TMP=$(mktemp -d)
+        curl -sSL "https://github.com/mszostok/codeowners-validator/releases/download/v0.7.2/codeowners-validator_0.7.2_Linux_${ARCH}.tar.gz" \
+          | tar -xz -C "$TMP"
+        sudo mv "$TMP/codeowners-validator" /usr/local/bin/codeowners-validator
+        sudo chmod +x /usr/local/bin/codeowners-validator
+
+    - name: Run codeowners-validator
+      shell: bash
+      env:
+        # Composite actions do not automatically set INPUT_* env vars the way Docker/JS actions do.
+        # codeowners-validator reads config via ENVS_PREFIX=INPUT, so we set INPUT_* explicitly.
+        ENVS_PREFIX: "INPUT"
+        INPUT_GITHUB_ACCESS_TOKEN:                ${{ inputs.github_access_token }}
+        INPUT_GITHUB_BASE_URL:                    ${{ inputs.github_base_url }}
+        INPUT_GITHUB_UPLOAD_URL:                  ${{ inputs.github_upload_url }}
+        INPUT_EXPERIMENTAL_CHECKS:                ${{ inputs.experimental_checks }}
+        INPUT_CHECKS:                             ${{ inputs.checks }}
+        INPUT_REPOSITORY_PATH:                    ${{ inputs.repository_path }}
+        INPUT_CHECK_FAILURE_LEVEL:                ${{ inputs.check_failure_level }}
+        INPUT_NOT_OWNED_CHECKER_SKIP_PATTERNS:    ${{ inputs.not_owned_checker_skip_patterns }}
+        INPUT_OWNER_CHECKER_REPOSITORY:           ${{ inputs.owner_checker_repository }}
+        INPUT_OWNER_CHECKER_IGNORED_OWNERS:       ${{ inputs.owner_checker_ignored_owners }}
+        INPUT_OWNER_CHECKER_ALLOW_UNOWNED_PATTERNS: ${{ inputs.owner_checker_allow_unowned_patterns }}
+        INPUT_OWNER_CHECKER_OWNERS_MUST_BE_TEAMS: ${{ inputs.owner_checker_owners_must_be_teams }}
+      run: codeowners-validator
 
 branding:
   icon: "shield"

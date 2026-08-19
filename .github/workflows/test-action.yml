@@ -1,0 +1,39 @@
+name: Test action (amd64 + arm64)
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    name: test (${{ matrix.runner }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: amd64
+          - runner: runs-on/pool=small-arm64
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create minimal CODEOWNERS for validation
+        run: |
+          mkdir -p .github
+          # Use a user that definitely exists so owners check passes
+          echo "* @DriveWealth/devops" > .github/CODEOWNERS
+
+      - name: Run codeowners-validator (${{ matrix.arch }})
+        uses: ./
+        with:
+          # Only run syntax/files checks — no token needed, no external API calls
+          checks: "syntax,files"
+          repository_path: "."
+
+      - name: Confirm binary arch
+        run: |
+          file $(which codeowners-validator) 2>/dev/null || \
+            file /usr/local/bin/codeowners-validator

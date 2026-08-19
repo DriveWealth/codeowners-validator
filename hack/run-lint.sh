@@ -23,7 +23,7 @@ host::install::golangci() {
   export PATH="${TMP_DIR}/bin:${PATH}"
 
   shout "Install the golangci-lint ${GOLANGCI_LINT_VERSION} locally to a tempdir..."
-  curl -sfSL -o "${TMP_DIR}/golangci-lint.sh" https://install.goreleaser.com/github.com/golangci/golangci-lint.sh
+  curl -sfSL -o "${TMP_DIR}/golangci-lint.sh" https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
   chmod 700 "${TMP_DIR}/golangci-lint.sh"
 
   "${TMP_DIR}/golangci-lint.sh" -b "${TMP_DIR}/bin" ${GOLANGCI_LINT_VERSION}
