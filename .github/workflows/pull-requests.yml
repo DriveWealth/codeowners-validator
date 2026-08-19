@@ -45,6 +45,9 @@ jobs:
       - name: "Code Quality Analysis"
         run: make test-lint
   integration-test:
+    # Requires TOKEN_INTEGRATION_TESTS secret (PAT with access to gh-codeowners org).
+    # Skip in forks where this secret is not available.
+    if: ${{ secrets.TOKEN_INTEGRATION_TESTS != '' }}
     strategy:
       fail-fast: false
       matrix:
