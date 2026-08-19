@@ -77,19 +77,21 @@ runs:
     - name: Run codeowners-validator
       shell: bash
       env:
-        GITHUB_ACCESS_TOKEN:          ${{ inputs.github_access_token }}
-        GITHUB_BASE_URL:              ${{ inputs.github_base_url }}
-        GITHUB_UPLOAD_URL:            ${{ inputs.github_upload_url }}
-        EXPERIMENTAL_CHECKS:          ${{ inputs.experimental_checks }}
-        CHECKS:                       ${{ inputs.checks }}
-        REPOSITORY_PATH:              ${{ inputs.repository_path }}
-        CHECK_FAILURE_LEVEL:          ${{ inputs.check_failure_level }}
-        NOT_OWNED_CHECKER_SKIP_PATTERNS: ${{ inputs.not_owned_checker_skip_patterns }}
-        OWNER_CHECKER_REPOSITORY:     ${{ inputs.owner_checker_repository }}
-        OWNER_CHECKER_IGNORED_OWNERS: ${{ inputs.owner_checker_ignored_owners }}
-        OWNER_CHECKER_ALLOW_UNOWNED_PATTERNS: ${{ inputs.owner_checker_allow_unowned_patterns }}
-        OWNER_CHECKER_OWNERS_MUST_BE_TEAMS: ${{ inputs.owner_checker_owners_must_be_teams }}
+        # Composite actions do not automatically set INPUT_* env vars the way Docker/JS actions do.
+        # codeowners-validator reads config via ENVS_PREFIX=INPUT, so we set INPUT_* explicitly.
         ENVS_PREFIX: "INPUT"
+        INPUT_GITHUB_ACCESS_TOKEN:                ${{ inputs.github_access_token }}
+        INPUT_GITHUB_BASE_URL:                    ${{ inputs.github_base_url }}
+        INPUT_GITHUB_UPLOAD_URL:                  ${{ inputs.github_upload_url }}
+        INPUT_EXPERIMENTAL_CHECKS:                ${{ inputs.experimental_checks }}
+        INPUT_CHECKS:                             ${{ inputs.checks }}
+        INPUT_REPOSITORY_PATH:                    ${{ inputs.repository_path }}
+        INPUT_CHECK_FAILURE_LEVEL:                ${{ inputs.check_failure_level }}
+        INPUT_NOT_OWNED_CHECKER_SKIP_PATTERNS:    ${{ inputs.not_owned_checker_skip_patterns }}
+        INPUT_OWNER_CHECKER_REPOSITORY:           ${{ inputs.owner_checker_repository }}
+        INPUT_OWNER_CHECKER_IGNORED_OWNERS:       ${{ inputs.owner_checker_ignored_owners }}
+        INPUT_OWNER_CHECKER_ALLOW_UNOWNED_PATTERNS: ${{ inputs.owner_checker_allow_unowned_patterns }}
+        INPUT_OWNER_CHECKER_OWNERS_MUST_BE_TEAMS: ${{ inputs.owner_checker_owners_must_be_teams }}
       run: codeowners-validator
 
 branding:
